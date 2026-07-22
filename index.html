@@ -127,14 +127,22 @@
     var faceFrameIndex = 0;
     var faceAnimTimer = null;
 
-    function startFaceAnim() {
+    function startFaceAnim(text) {
       clearInterval(faceAnimTimer);
+      var letters = text.replace(/\s/g, "").length || 1; // one emoji shown per letter
+      var msPerLetter = 90; // roughly how long it takes to "say" one letter
+      var shown = 0;
+
       faceFrameIndex = 0;
       face.textContent = FACE_FRAMES[faceFrameIndex];
+      shown++;
+
       faceAnimTimer = setInterval(function () {
+        if (shown >= letters) { clearInterval(faceAnimTimer); return; }
         faceFrameIndex = (faceFrameIndex + 1) % FACE_FRAMES.length;
         face.textContent = FACE_FRAMES[faceFrameIndex];
-      }, 180);
+        shown++;
+      }, msPerLetter);
     }
 
     function stopFaceAnim() {
@@ -154,7 +162,7 @@
       window.speechSynthesis.cancel(); // stop anything already talking
 
       var utter = new SpeechSynthesisUtterance(text);
-      utter.onstart = startFaceAnim;
+      utter.onstart = function () { startFaceAnim(text); };
       utter.onend = stopFaceAnim;
       utter.onerror = stopFaceAnim;
 
