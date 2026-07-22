@@ -44,14 +44,6 @@
     .face {
       font-size: clamp(4rem, 18vw, 6.5rem);
       margin-bottom: 20px;
-      transition: transform 0.1s ease;
-    }
-    .face.talking {
-      animation: talk 0.25s ease-in-out infinite;
-    }
-    @keyframes talk {
-      0%, 100% { transform: scale(1) rotate(-2deg); }
-      50%      { transform: scale(1.08) rotate(2deg); }
     }
 
     .type-card {
@@ -131,13 +123,12 @@
     var sayInput = document.getElementById("sayInput");
     var face = document.getElementById("face");
 
-    var FACE_FRAMES = ["😮", "🙂", "😀"];
+    var FACE_FRAMES = ["😮", "🙂", "😀", "😊"];
     var faceFrameIndex = 0;
     var faceAnimTimer = null;
 
     function startFaceAnim() {
       clearInterval(faceAnimTimer);
-      face.classList.add("talking");
       faceFrameIndex = 0;
       face.textContent = FACE_FRAMES[faceFrameIndex];
       faceAnimTimer = setInterval(function () {
@@ -148,7 +139,6 @@
 
     function stopFaceAnim() {
       clearInterval(faceAnimTimer);
-      face.classList.remove("talking");
       face.textContent = "😀";
     }
 
