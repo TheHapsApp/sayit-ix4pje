@@ -123,25 +123,33 @@
     var sayInput = document.getElementById("sayInput");
     var face = document.getElementById("face");
 
-    var FACE_FRAMES = ["😮", "🙂", "😀", "😁"];
-    var faceFrameIndex = 0;
+    // Each letter shows the mouth-shape emoji that best matches how you'd say it.
+    var LETTER_FACES = {
+      a: "😮", o: "😮",       // wide open mouth, like "ah"/"oh"
+      e: "😁", i: "😁",       // mouth spread wide showing teeth, like "eee"
+      u: "🙂",                // small rounded/pursed mouth, like "oo"
+      m: "🙂", b: "🙂", p: "🙂" // lips pressed together
+    };
+    var DEFAULT_LETTER_FACE = "😀"; // any other letter — an open, talking mouth
+
+    function faceForLetter(ch) {
+      return LETTER_FACES[ch.toLowerCase()] || DEFAULT_LETTER_FACE;
+    }
+
     var faceAnimTimer = null;
 
     function startFaceAnim(text) {
       clearInterval(faceAnimTimer);
-      var letters = text.replace(/\s/g, "").length || 1; // one emoji shown per letter
+      var letters = text.match(/[a-zA-Z]/g) || ["a"]; // one emoji shown per letter
       var msPerLetter = 90; // roughly how long it takes to "say" one letter
-      var shown = 0;
+      var index = 0;
 
-      faceFrameIndex = 0;
-      face.textContent = FACE_FRAMES[faceFrameIndex];
-      shown++;
+      face.textContent = faceForLetter(letters[index]);
 
       faceAnimTimer = setInterval(function () {
-        if (shown >= letters) { clearInterval(faceAnimTimer); return; }
-        faceFrameIndex = (faceFrameIndex + 1) % FACE_FRAMES.length;
-        face.textContent = FACE_FRAMES[faceFrameIndex];
-        shown++;
+        index++;
+        if (index >= letters.length) { clearInterval(faceAnimTimer); return; }
+        face.textContent = faceForLetter(letters[index]);
       }, msPerLetter);
     }
 
