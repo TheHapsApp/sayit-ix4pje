@@ -131,6 +131,27 @@
     var sayInput = document.getElementById("sayInput");
     var face = document.getElementById("face");
 
+    var FACE_FRAMES = ["😮", "🙂", "😀"];
+    var faceFrameIndex = 0;
+    var faceAnimTimer = null;
+
+    function startFaceAnim() {
+      clearInterval(faceAnimTimer);
+      face.classList.add("talking");
+      faceFrameIndex = 0;
+      face.textContent = FACE_FRAMES[faceFrameIndex];
+      faceAnimTimer = setInterval(function () {
+        faceFrameIndex = (faceFrameIndex + 1) % FACE_FRAMES.length;
+        face.textContent = FACE_FRAMES[faceFrameIndex];
+      }, 180);
+    }
+
+    function stopFaceAnim() {
+      clearInterval(faceAnimTimer);
+      face.classList.remove("talking");
+      face.textContent = "😀";
+    }
+
     function speakText() {
       var text = sayInput.value.trim();
       if (!text) return;
@@ -143,9 +164,9 @@
       window.speechSynthesis.cancel(); // stop anything already talking
 
       var utter = new SpeechSynthesisUtterance(text);
-      utter.onstart = function () { face.classList.add("talking"); };
-      utter.onend = function () { face.classList.remove("talking"); };
-      utter.onerror = function () { face.classList.remove("talking"); };
+      utter.onstart = startFaceAnim;
+      utter.onend = stopFaceAnim;
+      utter.onerror = stopFaceAnim;
 
       window.speechSynthesis.speak(utter);
     }
@@ -154,13 +175,13 @@
 
     document.getElementById("stopBtn").addEventListener("click", function () {
       if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-      face.classList.remove("talking");
+      stopFaceAnim();
     });
 
     document.getElementById("clearBtn").addEventListener("click", function () {
       sayInput.value = "";
       if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-      face.classList.remove("talking");
+      stopFaceAnim();
       sayInput.focus();
     });
 
